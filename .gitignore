@@ -1,0 +1,7 @@
+# Original C implementation
+hooke.c
+
+#IDEA
+.idea
+cmake-build-debug
+cmake-build-release
