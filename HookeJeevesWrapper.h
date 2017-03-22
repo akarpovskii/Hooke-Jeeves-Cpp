@@ -1,36 +1,22 @@
 //
-// Created by moonlightnvkz on 28.01.17.
+// Created by moonlightnvkz on 20.03.17.
 //
 
 #pragma once
 
+
 #include <vector>
+#include <functional>
 
-typedef double (*Func)(std::vector<double> x);
+namespace HookeJeevesWrapper {
+    using Func = std::function<double(std::vector<double>)>;
 
+    double best_nearby(std::vector<double> &delta,
+                       std::vector<double> &point, const double prevbest,
+                       const Func &f);
 
-typedef class HookeJeevesWrapper {
-public:
-    HookeJeevesWrapper() = delete;
-    ~HookeJeevesWrapper() = delete;
+    size_t hooke(std::vector<double> startpt, std::vector<double> &endpt,
+              double rho, double epsilon, size_t itermax, const Func &f);
+};
 
-    static unsigned find_min(Func func, std::vector<double> startpt,
-                                                 std::vector<double> endpt,
-                                                 double rho, double epsilon, unsigned itermax);
-
-#if Debug
-    static bool test_ax_b2_c();
-    static bool test_ax_b3_c();
-    static bool test_exp();
-    static bool test_log();
-    static bool test_sqrt();
-    static bool test_polinomial();
-    static bool test_rosenbrocks();
-    static bool test_woods();
-#endif
-
-private:
-    static double best_nearby(Func func, std::vector<double> delta,
-                              std::vector<double> point, double prevbest);
-} HJWrapper;
 
