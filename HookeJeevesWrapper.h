@@ -9,14 +9,14 @@
 #include <functional>
 
 namespace HookeJeevesWrapper {
-    using Func = std::function<double(std::vector<double>)>;
+    using Func = std::function<long double(const std::vector<long double>&)>;
 
-    double best_nearby(std::vector<double> &delta,
-                       std::vector<double> &point, const double prevbest,
+    long double best_nearby(std::vector<long double> &delta,
+                       std::vector<long double> &point, const long double prevbest,
                        const Func &f);
 
-    size_t hooke(std::vector<double> startpt, std::vector<double> &endpt,
-              double rho, double epsilon, size_t itermax, const Func &f);
+    size_t hooke(std::vector<long double> startpt, std::vector<long double> &endpt,
+              const long double rho, const long double epsilon, const size_t itermax, const Func &f);
 };
 
 
