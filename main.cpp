@@ -28,20 +28,30 @@ long double x2_2d(std::vector<long double> x) {
 }
 
 long double plancks_law(long double wavelength, long double temperature, long double amplitude) {
-#define hl 6.626070040818181818181818181818181818L
-#define kl 1.380648527979797979797979797979797979L
-#define cl 299792458L
-    constexpr long double A = logl(2L * M_PIl * hl) + 2 * logl(cl) + 11L * M_LN10l - logl(50000L);
-    constexpr long double e_c = cl * hl * 1E-2L / kl;
-    long double e = expm1l(e_c / (wavelength * (temperature + 273.15)));
-    return A - 5L * logl(wavelength) - logl(e);// - logl(amplitude);
+    constexpr long double h = 6.625e-34L;
+    constexpr long double k = 1.38e-23L;
+    constexpr long double c = 3e8L;
+
+    constexpr long double A = logl(2L * M_PIl * c);
+    return A - 4 * logl(wavelength / 1000) - 1239/wavelength/((temperature+273)/11601) + amplitude;
 }
 
 std::vector<long double> waves;
 std::vector<long double> spec;
 
+long double lsm_plancks_law(const std::vector<long double> &x) {
+    long double res = 0L;
+    size_t size = waves.size();
+    for (size_t i = 240; i < size; i += 1) {
+        long double s = spec.at(i);
+        long double p = plancks_law(waves.at(i), x.at(0), x.at(1));
+        res += (s - p) * (s - p);
+    }
+    return res;
+}
+
 bool read_data(std::vector<long double> &x, std::vector<long double> &y) {
-    std::ifstream is("657.dat");    // 657.dat and 1042.dat
+    std::ifstream is("1042.dat");    // 657.dat and 1042.dat
     if (!is) {
         return false;
     }
@@ -52,17 +62,6 @@ bool read_data(std::vector<long double> &x, std::vector<long double> &y) {
         y.push_back(_y);
     }
     return true;
-}
-
-long double lsm_plancks_law(const std::vector<long double> &x) {
-    long double res = 0L;
-    size_t size = waves.size() - 100;
-    for (size_t i = 750; i < size; i += 1) {
-        long double s = spec.at(i);
-        long double p = plancks_law(waves.at(i), x.at(0), x.at(1));
-        res += (s - p) * (s - p);
-    }
-    return res;
 }
 
 int main() {
