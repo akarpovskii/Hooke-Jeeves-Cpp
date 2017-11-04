@@ -2,7 +2,7 @@
 #include <cmath>
 #include <fstream>
 #include <vector>
-#include "include/HJWrapper.h"
+#include "../include/HJWrapper.h"
 
 using ldouble = HJWrapper::ldouble;
 
