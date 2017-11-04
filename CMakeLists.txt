@@ -1,13 +1,7 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.8)
 project(Hooke_Jeeves)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp HookeJeevesWrapper.cpp HookeJeevesWrapper.h)
+set(SOURCE_FILES src/main.cpp src/HJWrapper.cpp include/HJWrapper.h)
 add_executable(Hooke_Jeeves ${SOURCE_FILES})
-
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_definitions(Hooke_Jeeves PUBLIC Debug=0)
-elseif(CMAKE_BUILD_TYPE MATCHES Release)
-    target_compile_definitions(Hooke_Jeeves PUBLIC Debug=0)
-endif()
