@@ -1,11 +1,12 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include "../include/HJWrapper.h"
+#include <vector>
+#include "include/HJWrapper.h"
 
-using HJWrapper::ldouble;
+using ldouble = HJWrapper::ldouble;
 
-ldouble Rosenbrocks(const std::vector<ldouble> &x) {
+ldouble Rosenbrocks(std::vector<ldouble> x) {
     ldouble a, b, c;
     a = x.at(0);
     b = x.at(1);
@@ -13,24 +14,27 @@ ldouble Rosenbrocks(const std::vector<ldouble> &x) {
     return (c + (1.0 - a) * (1.0 - a));
 }
 
-ldouble sinus(const std::vector<ldouble> &x) {
+ldouble sinus(std::vector<ldouble> x) {
     return sinl(x[0]);
 }
 
-ldouble x2(const std::vector<ldouble> &x) {
+ldouble x2(std::vector<ldouble> x) {
     return (x[0] - 2) * (x[0] - 2);
 }
 
-ldouble x3(const std::vector<ldouble> &x) {
+ldouble x3(std::vector<ldouble> x) {
     return (x[0] - 1) * (x[0] - 2) * (x[0] - 3);
 }
 
-ldouble x2_2d(const std::vector<ldouble> &x) {
+ldouble x2_2d(std::vector<ldouble> x) {
     return (x[0] - 2) * (x[0] - 2) + (x[1] - 3) * (x[1] - 3);
 }
 
-ldouble plancks_law(const ldouble wavelength, const ldouble temperature, const ldouble amplitude) {
+ldouble plancks_law(ldouble wavelength, ldouble temperature, ldouble amplitude) {
+    constexpr ldouble h = 6.625e-34L;
+    constexpr ldouble k = 1.38e-23L;
     constexpr ldouble c = 3e8L;
+
     constexpr ldouble A = logl(2L * M_PIl * c);
     return A - 4 * logl(wavelength / 1000) - 1239/wavelength/((temperature+273)/11601) + amplitude;
 }
@@ -68,9 +72,9 @@ int main() {
         return 1;
     }
     std::vector<ldouble> startpt{0, 0};
-    constexpr size_t itermax = 10000;
-    constexpr ldouble rho = 0.5L;
-    constexpr ldouble epsilon = 1E-15L;
+    unsigned itermax = 10000;
+    ldouble rho = 0.5L;
+    ldouble epsilon = 1E-15L;
     HJWrapper::Func f(lsm_plancks_law);
     HJWrapper hjWrapper(rho, epsilon, itermax, f);
     std::cout << hjWrapper.hooke(startpt) << std::endl;
