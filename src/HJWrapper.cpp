@@ -4,19 +4,25 @@
 #include "../include/HJWrapper.h"
 
 
-HJWrapper::HJWrapper(ldouble rho, ldouble epsilon, unsigned itermax, const Func & f)
-    : rho(rho), epsilon(epsilon), itermax(itermax), f(f), result_has_been_stored(false) {
+HJWrapper::HJWrapper(ldouble rho, ldouble epsilon, unsigned itermax, const Func & f) {
+    if (fabsl(rho) > 1.0l) {
+        throw std::invalid_argument("rho must be -1 < rho < 1");
+    }
+    this->rho = rho;
+    this->epsilon = epsilon;
+    this->itermax = itermax;
+    this->f = f;
 }
 
 HJWrapper::ldouble HJWrapper::best_nearby(std::vector<ldouble> &delta, std::vector<ldouble> &point,
                                             ldouble prevbest, const Func &f) const {
     size_t size = point.size();
-    assert(delta.size() != point.size());
+    assert(delta.size() == point.size());
 
     std::vector<ldouble> tmp(point.begin(), point.end());
     ldouble fmin = prevbest;
 
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; ++i) {
         tmp.at(i) = point.at(i) + delta.at(i);
         ldouble newf = f(tmp);
         if (newf < fmin) {
@@ -36,13 +42,13 @@ HJWrapper::ldouble HJWrapper::best_nearby(std::vector<ldouble> &delta, std::vect
     return fmin;
 }
 
-unsigned HJWrapper::hooke(std::vector<ldouble> startpt, std::vector<ldouble> &endpt) const {
+unsigned HJWrapper::hooke(const std::vector<ldouble> &startpt_, std::vector<ldouble> &endpt) const {
+    auto startpt = startpt_;
     size_t size = startpt.size();
-    endpt.resize(size);
     std::vector<ldouble> delta(size);
     unsigned iterations = 0;
 
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; ++i) {
         delta.at(i) = fabsl(startpt.at(i) * rho);
         if (delta.at(i) < epsilon) {
             delta.at(i) = rho;
@@ -52,15 +58,15 @@ unsigned HJWrapper::hooke(std::vector<ldouble> startpt, std::vector<ldouble> &en
     ldouble step_length = rho;
     ldouble fbefore = f(startpt);
     while (iterations < itermax && step_length > epsilon) {
-        iterations++;
+        ++iterations;
         /* find best new point, one coord at a time */
-        startpt = endpt;
+        endpt = startpt;
         ldouble newf = best_nearby(delta, endpt, fbefore, f);
 
         /* if we made some improvements, pursue that direction */
         bool keep = true;
         while (newf < fbefore && keep) {
-            for (size_t i = 0; i < size; i++) {
+            for (size_t i = 0; i < size; ++i) {
                 /* firstly, arrange the sign of delta[] */
                 if (endpt.at(i) < startpt.at(i)) {
                     delta.at(i) = -fabsl(delta.at(i));
@@ -81,7 +87,7 @@ unsigned HJWrapper::hooke(std::vector<ldouble> startpt, std::vector<ldouble> &en
             /* and the old points are due to actual */
             /* displacements; beware of roundoff errors that */
             /* might cause newf < fbefore */
-            for (unsigned i = 0; i < size; i++) {
+            for (unsigned i = 0; i < size; ++i) {
                 keep = true;
                 if (fabsl(endpt.at(i) - startpt.at(i)) > 0.5L * fabsl(delta.at(i))) {
                     break;
@@ -97,13 +103,14 @@ unsigned HJWrapper::hooke(std::vector<ldouble> startpt, std::vector<ldouble> &en
             }
         }
     }
-    endpt = std::move(startpt);
     return iterations;
 }
 
-unsigned HJWrapper::hooke(std::vector<ldouble> startpt) {
-    unsigned iters = hooke(std::move(startpt), endpt);
+unsigned HJWrapper::hooke(const std::vector<ldouble> &startpt) {
+    unsigned iters = hooke(startpt, endpt);
+#ifndef NDEBUG
     result_has_been_stored = true;
+#endif
     return iters;
 }
 

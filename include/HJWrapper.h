@@ -31,11 +31,11 @@ public:
 
     /// Doesn't store the end point to member field implicitly
     /// @return number of iterations performed
-    unsigned hooke(std::vector<ldouble> startpt, std::vector<ldouble> &endpt) const;
+    unsigned hooke(const std::vector<ldouble> &startpt, std::vector<ldouble> &endpt) const;
 
     /// Stores the end point in the member field
     /// @return number of iterations performed
-    unsigned hooke(std::vector<ldouble> startpt);
+    unsigned hooke(const std::vector<ldouble> &startpt);
 
     /// Uses previous result as the start point and stores the result in the end point
     /// The previous result is used only if it was received using this or the function above
@@ -54,7 +54,7 @@ public:
 
 protected:
 #ifndef NDEBUG
-    bool result_has_been_stored;	// Only for assert usage
+    bool result_has_been_stored = false;	// Only for assert usage
 #endif
     ldouble best_nearby(std::vector<ldouble> &delta,
                             std::vector<ldouble> &point, ldouble prevbest,
